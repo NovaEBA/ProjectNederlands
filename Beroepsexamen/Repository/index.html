@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basic Bootstrap Website</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+      .navigationbar{
+        box-shadow: rgba(0, 0, 0, 0.1) 0px 20px 25px -5px, rgba(0, 0, 0, 0.04) 0px 10px 10px -5px;
+        position:fixed;
+        z-index:9999;
+        width:100%;
+        background-color:white;
+        font-size:17px;
+      }
+        .navbar .nav-link{
+          color: rgba(68, 68, 68, 1);
+        }
+        .navbar .nav-link:hover{
+          color:lightgray;
+        }
+        .navbar .navbar-brand{
+          font-weight:bold;
+          color:rgb(85, 85, 85);
+        }
+        .header-image {
+            width: 100%;
+            height: 500px;
+            background-image: url('https://via.placeholder.com/1500x400');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 40px; /* Added margin to separate header from cards */
+        }
+        .header-text-box {
+            background-color: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 80%;
+            text-align: center;
+            margin-top:50px;
+        }
+        .centered-section {
+            max-width: 800px;
+            margin: 0 auto 40px; /* Added margin to separate cards from next section */
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+       
+        .card {
+            margin-bottom: 20px;
+        }
+        .more-button {
+            display: block;
+            margin: 20px auto;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navigation Bar -->
+<div class="navigationbar">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-sm-8 justify-content-center">
+        <nav class="navbar navbar-expand-lg justify-content-center">
+          <div class="container">
+              <a class="navbar-brand" href="index.html">
+                <img src="img/light.png" width="25" height="25" class="d-inline-block align-top" style="opacity:0.7" alt="lightbulb icoon">
+                WoordDossier
+              </a>
+              <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon"></span>
+              </button>
+              <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+                  <ul class="navbar-nav">
+                      <li class="nav-item">
+                          <a class="nav-link" href="#">Dashboard</a>
+                      </li>
+                      <li class="nav-item">
+                          <a class="nav-link" href="#">Woorden</a>
+                      </li>
+                      <li class="nav-item">
+                          <a class="nav-link" href="#">Bronnen</a>
+                      </li>
+                      <li class="nav-item">
+                          <a class="nav-link" href="#">Log uit
+                            <img src="img/profile.png" width="25" height="25" class="d-inline-block align-top" style="opacity:0.2; margin-left:5px;" alt="profile icoon">
+                          </a>
+                      </li>
+                  </ul>
+              </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+  </div>
+</div>
+    <!-- Header -->
+    <header class="header-image">
+        <div class="header-text-box">
+            <h1>Welcome to Our Website</h1>
+            <p>This is a sample text over the header image.</p>
+        </div>
+    </header>
+
+    <!-- Centered Section -->
+    <section class="centered-section">
+        <h2>Centered Section</h2>
+        <p>This section is centered and constrained to a narrower width. You can add your content here.</p>
+    </section>
+
+    <!-- Article Section -->
+    <div class="container">
+        <h2 class="text-center">Featured Articles</h2>
+        <div class="row">
+            <div class="col-md-6 col-lg-3">
+                <div class="card">
+                    <img src="https://via.placeholder.com/300" class="card-img-top" alt="Article 1">
+                    <div class="card-body">
+                        <h5 class="card-title">Article 1</h5>
+                        <p class="card-text">This is a sample article description.</p>
+                        <a href="#" class="btn btn-primary">Read More</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="card">
+                    <img src="https://via.placeholder.com/300" class="card-img-top" alt="Article 2">
+                    <div class="card-body">
+                        <h5 class="card-title">Article 2</h5>
+                        <p class="card-text">This is a sample article description.</p>
+                        <a href="#" class="btn btn-primary">Read More</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="card">
+                    <img src="https://via.placeholder.com/300" class="card-img-top" alt="Article 3">
+                    <div class="card-body">
+                        <h5 class="card-title">Article 3</h5>
+                        <p class="card-text">This is a sample article description.</p>
+                        <a href="#" class="btn btn-primary">Read More</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="card">
+                    <img src="https://via.placeholder.com/300" class="card-img-top" alt="Article 4">
+                    <div class="card-body">
+                        <h5 class="card-title">Article 4</h5>
+                        <p class="card-text">This is a sample article description.</p>
+                        <a href="#" class="btn btn-primary">Read More</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <a href="#" class="btn btn-primary more-button">More</a>
+    </div>
+
+<!-- Dashboard Section -->
+<section class="dashboard-section text-center">
+  <h2>Dashboard</h2>
+  <div class="container">
+      <div class="row justify-content-center">
+          <div class="col-md-10">
+              <div class="card-details">
+                  <!-- Display existing cards -->
+                  <!-- Example Cards -->
+                  <div class="row">
+                      <!-- Example Card 1 -->
+                      <div class="col-md-4 mb-3">
+                          <div class="card">
+                              <div class="card-body">
+                                  <h5 class="card-title">Word: Example</h5>
+                                  <p class="card-text">Meaning: An instance serving to illustrate or explain something.</p>
+                                  <p class="card-text">Sentence: This is an example sentence.</p>
+                                  <div class="btn-group" role="group" aria-label="Card Actions">
+                                      <button type="button" class="btn btn-primary">Edit</button>
+                                      <button type="button" class="btn btn-danger">Delete</button>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                      <!-- End Example Card 1 -->
+
+                      <!-- Example Card 2 -->
+                      <div class="col-md-4 mb-3">
+                          <div class="card">
+                              <div class="card-body">
+                                  <h5 class="card-title">Word: Example</h5>
+                                  <p class="card-text">Meaning: An instance serving to illustrate or explain something.</p>
+                                  <p class="card-text">Sentence: This is an example sentence.</p>
+                                  <div class="btn-group" role="group" aria-label="Card Actions">
+                                      <button type="button" class="btn btn-primary">Edit</button>
+                                      <button type="button" class="btn btn-danger">Delete</button>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                      <!-- End Example Card 2 -->
+
+                      <!-- Example Card 3 -->
+                      <div class="col-md-4 mb-3">
+                          <div class="card">
+                              <div class="card-body">
+                                  <h5 class="card-title">Word: Example</h5>
+                                  <p class="card-text">Meaning: An instance serving to illustrate or explain something.</p>
+                                  <p class="card-text">Sentence: This is an example sentence.</p>
+                                  <div class="btn-group" role="group" aria-label="Card Actions">
+                                      <button type="button" class="btn btn-primary">Edit</button>
+                                      <button type="button" class="btn btn-danger">Delete</button>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                      <!-- End Example Card 3 -->
+                  </div>
+                  <!-- End Example Cards -->
+              </div>
+          </div>
+      </div>
+  </div>
+</section>
+
+
+    <!-- Bootstrap JS, Popper.js, and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>
+
+
+
+

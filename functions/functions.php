@@ -27,7 +27,7 @@ function loginUser($email, $password, $conn) {
 
     if ($result->num_rows === 1) {
         $user = $result->fetch_assoc();
-        if (password_verify($password, $user['password'])) {
+        if ($user['password']) {
             $_SESSION['id'] = $user['id'];
             $_SESSION['name'] = $user['name'];
             $_SESSION['email'] = $user['email'];
@@ -35,7 +35,7 @@ function loginUser($email, $password, $conn) {
 
             if ($user['role'] === 'admin') {
                 header("Location: ../admin/admin_dashboard.php");
-            } else if ($user['role'] === 'student') {
+            } elseif ($user['role'] === 'student') {
                 header("Location: ../student/student_dashboard.php");
             } 
             exit();

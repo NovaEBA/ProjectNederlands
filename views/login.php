@@ -2,24 +2,24 @@
 include('../config/db.php');
 include('../functions/functions.php');
 
+if (isset($_SESSION['id'])) {
+    if ($_SESSION['role'] === 'admin') {
+        header("Location: ../admin/admin_dashboard.php");
+    } elseif ($_SESSION['role'] === 'student') {
+        header("Location: ../student/student_dashboard.php");
+    }
+    exit();
+}
+
+$error = '';
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST['email'];
     $password = $_POST['password'];
 
-    $user_type = validateUser($email, $password, $conn); // Assuming validateUser returns user type (e.g., 'admin', 'student')
-
-    if ($user_type) {
-        $_SESSION['id'] = getUserID($email, $conn);
-        $_SESSION['name'] = getUserName($_SESSION['id'], $conn);
-
-        if ($user_type === 'admin') {
-            header("Location: ../admin/admin_dashboard.php");
-        } elseif ($user_type === 'student') {
-            header("Location: ../student/student_dashboard.php");
-        }
-        exit();
-    } else {
-        $error = "Invalid email or password";
+    $loginResult = loginUser($email, $password, $conn);
+    if ($loginResult !== true) {
+        $error = $loginResult;
     }
 }
 ?>
@@ -35,7 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <body>
     <h1>Login</h1>
 
-    <?php if(isset($error)): ?>
+    <?php if(!empty($error)): ?>
         <p><?php echo $error; ?></p>
     <?php endif; ?>
 

@@ -3,8 +3,6 @@ include('../config/db.php');
 include('../functions/functions.php');
 include('../classes/Student.php');
 
-session_start();
-
 checkStudentRole();
 
 $student = new Student($conn);
@@ -12,12 +10,12 @@ $student = new Student($conn);
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $word_id = $_POST['word_id'];
     $sentence = $_POST['sentence'];
-    $student_id = $_SESSION['user_id']; // Assuming the user ID is stored in the session
-
+    $student_id = $_SESSION['id'];
+    
     $message = $student->createSentence($word_id, $sentence, $student_id);
     echo $message;
 } else {
-    $words = $student->listWords($_SESSION['user_id']);
+    $words = $student->listWords($_SESSION['id']);
     ?>
     <!DOCTYPE html>
     <html lang="en">

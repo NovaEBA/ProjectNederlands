@@ -3,13 +3,11 @@ include('../config/db.php');
 include('../functions/functions.php');
 include('../classes/Student.php');
 
-session_start();
-
 checkStudentRole();
 
 $student = new Student($conn);
 
-$student_id = $_SESSION['user_id'];
+$student_id = $_SESSION['id'];
 
 $words = $student->listWords($student_id);
 
@@ -27,7 +25,7 @@ $comments = $student->getCommentsByStudent($student_id);
     <link rel="stylesheet" href="../public/css/styles.css"> <!-- Link to your CSS file -->
 </head>
 <body>
-    <h1>Welcome, <?php echo $_SESSION['user_name']; ?>!</h1>
+    <h1>Welcome, <?php echo $_SESSION['name']; ?>!</h1>
 
     <h2>Words Added:</h2>
     <ul>

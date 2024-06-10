@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .card-display {
+            margin-top: 20px;
+        }
+        .card-item {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container mt-5">
+        <h2 class="text-center">PDF and Word Upload Tool</h2>
+        <div class="text-center mt-3">
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#uploadModal">
+                Add
+            </button>
+        </div>
+    
+        <!-- Modal -->
+        <div class="modal fade" id="uploadModal" tabindex="-1" aria-labelledby="uploadModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="uploadModalLabel">Upload PDF and Words</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="uploadForm" action="upload.php" method="post" enctype="multipart/form-data">
+                            <div class="form-group">
+                                <label for="pdfFile">PDF File</label>
+                                <input type="file" class="form-control" id="pdfFile" name="pdfFile" accept="application/pdf" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="words">Words</label>
+                                <input type="text" class="form-control" id="words" name="words" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Upload</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Dashboard Section -->
+<section class="dashboard-section text-center">
+    <h2>Dashboard</h2>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="card-details">
+                    <!-- Display existing cards -->
+                    <!-- Example Cards -->
+                    <div class="row">
+                        <!-- Example Card 1 -->
+                        <div class="col-md-4 mb-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Word: Example</h5>
+                                    <p class="card-text">Meaning: An instance serving to illustrate or explain something.</p>
+                                    <p class="card-text">Sentence: This is an example sentence.</p>
+                                    <div class="btn-group" role="group" aria-label="Card Actions">
+                                        <button type="button" class="btn btn-primary">Edit</button>
+                                        <button type="button" class="btn btn-danger">Delete</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End Example Card 1 -->
+  
+                        <!-- Example Card 2 -->
+                        <div class="col-md-4 mb-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Word: Example</h5>
+                                    <p class="card-text">Meaning: An instance serving to illustrate or explain something.</p>
+                                    <p class="card-text">Sentence: This is an example sentence.</p>
+                                    <div class="btn-group" role="group" aria-label="Card Actions">
+                                        <button type="button" class="btn btn-primary">Edit</button>
+                                        <button type="button" class="btn btn-danger">Delete</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End Example Card 2 -->
+  
+                        <!-- Example Card 3 -->
+                        <div class="col-md-4 mb-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Word: Example</h5>
+                                    <p class="card-text">Meaning: An instance serving to illustrate or explain something.</p>
+                                    <p class="card-text">Sentence: This is an example sentence.</p>
+                                    <div class="btn-group" role="group" aria-label="Card Actions">
+                                        <button type="button" class="btn btn-primary">Edit</button>
+                                        <button type="button" class="btn btn-danger">Delete</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End Example Card 3 -->
+                    </div>
+                    <!-- End Example Cards -->
+                </div>
+            </div>
+        </div>
+    </div>
+  </section>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

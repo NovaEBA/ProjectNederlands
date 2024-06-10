@@ -27,7 +27,7 @@ function loginUser($email, $password, $conn) {
 
     if ($result->num_rows === 1) {
         $user = $result->fetch_assoc();
-        if ($user['password']) {
+        if (password_verify($password, $user['password'])) {
             $_SESSION['id'] = $user['id'];
             $_SESSION['name'] = $user['name'];
             $_SESSION['email'] = $user['email'];

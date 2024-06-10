@@ -7,10 +7,10 @@ class Note {
     }
 
     // Method to add a note to a student's sentence
-    public function addNoteToSentence($student_sentence_id, $comment, $user_id) {
+    public function addNoteToSentence($student_sentence_id, $user_id, $comment) {
         $sql = "INSERT INTO comments (student_sentence_id, user_id, comment) VALUES (?, ?, ?)";
         $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("isi", $student_sentence_id, $comment, $user_id);
+        $stmt->bind_param("iis", $student_sentence_id, $user_id, $comment);
 
         if ($stmt->execute()) {
             return "Comment added successfully!";
@@ -21,7 +21,7 @@ class Note {
 
     // Method to retrieve all notes for a specific sentence
     public function getNotesBySentence($student_sentence_id) {
-        $sql = "SELECT comment, user_id, created_at FROM comments WHERE student_sentence_id = ?";
+        $sql = "SELECT user_id, comment, created_at FROM comments WHERE student_sentence_id = ?";
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param("i", $student_sentence_id);
         $stmt->execute();

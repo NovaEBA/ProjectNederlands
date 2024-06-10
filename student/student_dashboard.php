@@ -8,12 +8,6 @@ checkStudentRole();
 $student = new Student($conn);
 
 $student_id = $_SESSION['id'];
-
-$words = $student->listWords($student_id);
-
-// $sentences = $student->getSentencesByStudent($student_id);
-
-// $comments = $student->getCommentsByStudent($student_id);
 ?>
 
 <!DOCTYPE html>

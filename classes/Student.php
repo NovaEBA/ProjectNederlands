@@ -6,24 +6,11 @@ class Student {
         $this->conn = $conn;
     }
 
-    // Method to add a word
-    public function addWord($word, $meaning, $source, $difficulty, $user_id) {
-        $sql = "INSERT INTO words (word, meaning, source, difficulty, user_id) VALUES (?, ?, ?, ?, ?)";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("ssssi", $word, $meaning, $source, $difficulty, $user_id);
-
-        if ($stmt->execute()) {
-            return "Word added successfully!";
-        } else {
-            return "Error: " . $stmt->error;
-        }
-    }
-
     // Method to create a sentence using a word
-    public function createSentence($word_id, $sentence, $user_id) {
-        $sql = "INSERT INTO student_sentences (word_id, sentence, user_id) VALUES (?, ?, ?)";
+    public function createSentence($user_id, $word_id, $sentence) {
+        $sql = "INSERT INTO student_sentences (user_id, word_id, sentence) VALUES (?, ?, ?)";
         $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("isi", $word_id, $sentence, $user_id);
+        $stmt->bind_param("iis", $user_id, $word_id, $sentence);
 
         if ($stmt->execute()) {
             return "Sentence created successfully!";
@@ -51,7 +38,6 @@ class Student {
     public function listWords($user_id) {
         $sql = "SELECT id, word, meaning, source FROM words";
         $stmt = $this->conn->prepare($sql);
-        // $stmt->bind_param("i", $user_id);
         $stmt->execute();
         $result = $stmt->get_result();
 

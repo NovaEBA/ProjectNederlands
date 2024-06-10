@@ -48,10 +48,10 @@ class Student {
     }
 
     // Method to list all words added by the student
-    public function listWords($usert_id) {
-        $sql = "SELECT id, word, meaning, source FROM words WHERE user_id = ?";
+    public function listWords($user_id) {
+        $sql = "SELECT id, word, meaning, source FROM words";
         $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("i", $user_id);
+        // $stmt->bind_param("i", $user_id);
         $stmt->execute();
         $result = $stmt->get_result();
 

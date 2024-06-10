@@ -11,9 +11,9 @@ $student_id = $_SESSION['id'];
 
 $words = $student->listWords($student_id);
 
-$sentences = $student->getSentencesByStudent($student_id);
+// $sentences = $student->getSentencesByStudent($student_id);
 
-$comments = $student->getCommentsByStudent($student_id);
+// $comments = $student->getCommentsByStudent($student_id);
 ?>
 
 <!DOCTYPE html>
@@ -25,27 +25,7 @@ $comments = $student->getCommentsByStudent($student_id);
     <link rel="stylesheet" href="../public/css/styles.css"> <!-- Link to your CSS file -->
 </head>
 <body>
-    <h1>Welcome, <?php echo $_SESSION['name']; ?>!</h1>
 
-    <h2>Words Added:</h2>
-    <ul>
-        <?php foreach ($words as $word): ?>
-            <li><?= $word['word'] ?> - <?= $word['meaning'] ?></li>
-        <?php endforeach; ?>
-    </ul>
-
-    <h2>Sentences Created:</h2>
-    <ul>
-        <?php foreach ($sentences as $sentence): ?>
-            <li><?= $sentence['sentence'] ?></li>
-        <?php endforeach; ?>
-    </ul>
-
-    <h2>Comments from Admin:</h2>
-    <ul>
-        <?php foreach ($comments as $comment): ?>
-            <li><?= $comment['comment'] ?></li>
-        <?php endforeach; ?>
-    </ul>
+<p><a href="../views/logout.php">Logout</a>
 </body>
 </html>

@@ -31,7 +31,7 @@
                             <a class="nav-link" href="#">Bronnen</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Log uit
+                            <a class="nav-link" href="../views/logout.php">Log uit
                                 <img src="../public/img/user.png" width="30" height="30" class="d-inline-block align-top" style="opacity:0.2; margin-left:5px;" alt="Log out icon">
                             </a>
                         </li>

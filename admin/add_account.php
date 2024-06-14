@@ -21,9 +21,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("ssss", $name, $email, $hashed_password, $role);
 
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ssss", $name, $email, $hashed_password, $role);
-
     if ($stmt->execute()) {
         echo ucfirst($role) . " account created successfully!";
     } else {

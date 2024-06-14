@@ -14,6 +14,5 @@ checkAdminRole();
 </head>
 <body>
     <?php include('header.php');?>
-    <p><a href="../views/logout.php">Logout</a>
 </body>
 </html>

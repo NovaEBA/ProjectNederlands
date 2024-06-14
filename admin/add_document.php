@@ -17,23 +17,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     echo $message;
 }
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Add Document</title>
-    <link rel="stylesheet" href="../public/css/styles.css">
-</head>
-<body>
-    <h1>Add Document</h1>
-    <form action="add_document.php" method="post" enctype="multipart/form-data">
-        <label for="title">Title:</label><br>
-        <input type="text" id="title" name="title" required><br><br>
-        <label for="description">Description:</label><br>
-        <textarea id="description" name="description" required></textarea><br><br>
-        <label for="file">Select File:</label><br>
-        <input type="file" id="file" name="file" required><br><br>
-        <input type="submit" value="Add Document">
-    </form>
-</body>
-</html>
+<form action="" method="post" enctype="multipart/form-data">
+    <div class="form-group">
+        <label for="title">Title</label>
+        <input type="text" class="form-control" id="title" name="title" required>
+    </div>
+    <div class="form-group">
+        <label for="description">Description</label>
+        <textarea class="form-control" id="description" name="description" required></textarea>
+    </div>
+    <div class="form-group">
+        <label for="file">Select File</label>
+        <input type="file" class="form-control-file" id="file" name="file" required>
+    </div>
+    <button type="submit" class="btn btn-success">Submit</button>
+</form>

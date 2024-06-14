@@ -6,7 +6,7 @@
 </head>
 <body>
     <!-- Navigation Bar -->
-    <div class="navigationbar">
+    <div class="navigationbar fixed-top">
     <div class="container">
         <div class="row justify-content-center">
         <div class="col-sm-10 justify-content-center">

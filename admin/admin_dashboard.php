@@ -10,10 +10,9 @@ checkAdminRole();
 <head>
     <meta charset="UTF-8">
     <title>Admin Dashboard</title>
-    <link rel="stylesheet" href="../public/css/styles.css">
+    <link rel="stylesheet" href="../public/css/style.css">
 </head>
 <body>
-    <h1>Welcome, Admin</h1>
-    <p><a href="../views/logout.php">Logout</a>
+    <?php include('header.php');?>
 </body>
 </html>

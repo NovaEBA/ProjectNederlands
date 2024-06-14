@@ -10,9 +10,9 @@ $student = new Student($conn);
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $word_id = $_POST['word_id'];
     $sentence = $_POST['sentence'];
-    $student_id = $_SESSION['id'];
+    $user_id = $_SESSION['id'];
     
-    $message = $student->createSentence($word_id, $sentence, $student_id);
+    $message = $student->createSentence($user_id, $word_id, $sentence);
     echo $message;
 } else {
     $words = $student->listWords($_SESSION['id']);

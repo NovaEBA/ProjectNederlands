@@ -9,14 +9,19 @@ checkAdminRole();
 $note = new Note($conn);
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $sentence_id = $_POST['id'];
-    $note_text = $_POST['comment'];
-    $admin_id = $_SESSION['id']; // Assuming the user ID is stored in the session
+    $student_sentence_id = $_POST['sentence_id'];
+    $user_id = $_SESSION['id']; 
+    $comment = $_POST['comment'];
 
-    $message = $note->addNoteToSentence($sentence_id, $note_text, $admin_id);
-    echo $message;
+    $message = $note->addNoteToSentence($student_sentence_id,  $user_id, $comment);
+    if ($message === "Comment added successfully!") {
+        header("Location: ../admin/admin_dashboard.php");
+        exit();
+    } else {
+        echo $message;
+    }
 } else {
-    ?>
+?>
     <!DOCTYPE html>
     <html lang="en">
     <head>
@@ -25,13 +30,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <link rel="stylesheet" href="../public/css/styles.css">
     </head>
     <body>
-        <h1>Add Note</h1>
-        <form action="add_note.php" method="post">
+        <h1>Add Comment</h1>
+        <form action="add_comment.php" method="post">
             <label for="sentence_id">Sentence ID:</label><br>
             <input type="text" id="sentence_id" name="sentence_id" required><br><br>
-            <label for="note">Note:</label><br>
-            <textarea id="note" name="note" required></textarea><br><br>
-            <input type="submit" value="Add Note">
+            <label for="comment">Comment:</label><br>
+            <textarea id="comment" name="comment" required></textarea><br><br>
+            <input type="submit" value="Add Comment">
         </form>
     </body>
     </html>

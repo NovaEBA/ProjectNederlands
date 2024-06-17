@@ -5,7 +5,25 @@ class Admin {
     public function __construct($conn) {
         $this->conn = $conn;
     }
+    public function getUploadedFilesCount($search = '') {
+        $query = "SELECT COUNT(*) as total FROM documents WHERE title LIKE ?";
+        $stmt = $this->conn->prepare($query);
+        $searchTerm = '%' . $search . '%';
+        $stmt->bind_param("s", $searchTerm);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_assoc()['total'];
+    }
 
+    public function getUploadedFilesWithPagination($offset, $limit, $search = '') {
+        $query = "SELECT * FROM documents WHERE title LIKE ? ORDER BY uploaded_at DESC LIMIT ? OFFSET ?";
+        $stmt = $this->conn->prepare($query);
+        $searchTerm = '%' . $search . '%';
+        $stmt->bind_param("sii", $searchTerm, $limit, $offset);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
  // Method to add a document
  public function addDocument($user_id, $file, $description, $title) {
     // Handle file upload
@@ -20,27 +38,27 @@ class Admin {
         if ($check !== false) {
             $uploadOk = 1;
         } else {
-            return "File is not an image.";
+            return "Bestand is geen afbeelding.";
             $uploadOk = 0;
         }
     }
 
     // Check file size
     if ($file["size"] > 500000) {
-        return "Sorry, your file is too large.";
+        return "Het gekozen bestand is te groot.";
         $uploadOk = 0;
     }
 
     // Allow certain file formats
     $allowedTypes = ['pdf', 'doc', 'docx', 'txt'];
     if (!in_array($fileType, $allowedTypes)) {
-        return "Sorry, only PDF, DOC, DOCX & TXT files are allowed.";
+        return "Alleen PDF, DOC, DOCX & TXT mogelijk";
         $uploadOk = 0;
     }
 
     // Check if $uploadOk is set to 0 by an error
     if ($uploadOk == 0) {
-        return "Sorry, your file was not uploaded.";
+        return "Het bestand is niet geupload";
     // If everything is ok, try to upload file
     } else {
         if (move_uploaded_file($file["tmp_name"], $targetFile)) {
@@ -54,12 +72,12 @@ class Admin {
             $stmt->bind_param("isss", $user_id, $targetFile, $description, $title);
 
             if ($stmt->execute()) {
-                return "Document added successfully!";
+                return "Het bestand is toegevoegd!";
             } else {
                 return "Error: " . $stmt->error;
             }
         } else {
-            return "Sorry, there was an error uploading your file.";
+            return "Het uploaden van het bestand is helaas mislukt";
         }
      }
     }
@@ -75,49 +93,16 @@ class Admin {
             return [];
         }
     }
-    // Method to delete a document
-public function deleteDocument($document_id) {
-    // Initialize $file_path variable
-    $file_path = '';
-
-    // Get file path to delete the file from the server
-    $sql = "SELECT file_path FROM documents WHERE id = ?";
-    $stmt = $this->conn->prepare($sql);
-    $stmt->bind_param("i", $document_id);
-    
-    if ($stmt->execute()) {
-        $stmt->bind_result($file_path);
-        $stmt->fetch();
-        $stmt->close();
-    } else {
-        return "Error retrieving file path: " . $stmt->error;
-    }
-
-    // Check if $file_path is empty or null (no record found)
-    if (empty($file_path)) {
-        return "Document not found or file path is empty.";
-    }
-
-    // Delete the file from the server
-    if (file_exists($file_path)) {
-        if (unlink($file_path)) {
-            // Delete the document from the database
-            $sql = "DELETE FROM documents WHERE id = ?";
-            $stmt = $this->conn->prepare($sql);
-            $stmt->bind_param("i", $document_id);
-
-            if ($stmt->execute()) {
-                return "Document deleted successfully!";
-            } else {
-                return "Error deleting document from database: " . $stmt->error;
-            }
+    public function deleteDocument($document_id) {
+        $query = "DELETE FROM document WHERE id = ?";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bind_param("i", $document_id); // Assuming id is an integer
+        if ($stmt->execute()) {
+            return "Document deleted successfully";
         } else {
-            return "Error deleting file from server.";
+            return "Error deleting document: " . $stmt->error;
         }
-    } else {
-        return "File does not exist on server.";
     }
-}
 
     // Method to add a comment to a student's sentence
     public function addComment($sentence_id, $comment, $admin_id) {
@@ -126,7 +111,7 @@ public function deleteDocument($document_id) {
         $stmt->bind_param("isi", $sentence_id, $comment, $admin_id);
 
         if ($stmt->execute()) {
-            return "Comment added successfully!";
+            return "Opmerking toegevoegd!!";
         } else {
             return "Error: " . $stmt->error;
         }
@@ -154,7 +139,7 @@ public function deleteDocument($document_id) {
         $stmt->bind_param("sss", $word, $meaning, $source);
 
         if ($stmt->execute()) {
-            return "Word added successfully!";
+            return "Woord toegevoegd!";
         } else {
             return "Error: " . $stmt->error;
         }

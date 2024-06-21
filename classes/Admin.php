@@ -24,13 +24,13 @@ class Admin {
         $result = $stmt->get_result();
         return $result->fetch_all(MYSQLI_ASSOC);
     }
- // Method to add a document
- public function addDocument($user_id, $file, $description, $title) {
-    // Handle file upload
-    $targetDir = "../uploads";
-    $targetFile = $targetDir . basename($file["name"]);
-    $uploadOk = 1;
-    $fileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
+    // Method to add a document
+    public function addDocument($user_id, $file, $description, $title) {
+        // Handle file upload
+        $targetDir = "..\uploads";
+        $targetFile = $targetDir . basename($file["name"]);
+        $uploadOk = 1;
+        $fileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
 
     // Check if file is a real file
     if (isset($_POST["submit"])) {
@@ -93,14 +93,66 @@ class Admin {
             return [];
         }
     }
+
+    //Delete docuemnt
     public function deleteDocument($document_id) {
-        $query = "DELETE FROM document WHERE id = ?";
+        $query = "DELETE FROM documents WHERE id = ?";
         $stmt = $this->conn->prepare($query);
         $stmt->bind_param("i", $document_id); // Assuming id is an integer
         if ($stmt->execute()) {
             return "Document deleted successfully";
         } else {
             return "Error deleting document: " . $stmt->error;
+        }
+    }
+
+   // Update Document
+   public function updateDocument($id, $title, $description) {
+    $stmt = $this->conn->prepare("UPDATE documents SET title = ?, description = ? WHERE id = ?");
+    $stmt->bind_param("ssi", $title, $description, $id);
+
+        if ($stmt->execute()) {
+            return "Document updated successfully.";
+        } else {
+            return "Error updating document: " . $this->conn->error;
+        }
+    }
+
+
+    // Helper method to handle file upload (if needed)
+    private function uploadFile($file) {
+        $targetDir = "..\uploads";
+        $targetFile = $targetDir . basename($file["name"]);
+        $uploadOk = 1;
+        $fileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
+
+        // Check if file is a real file
+        $check = getimagesize($file["tmp_name"]);
+        if ($check === false) {
+            return false; // File is not an image
+        }
+
+        // Check file size
+        if ($file["size"] > 500000) {
+            return false; // File size exceeds limit
+        }
+
+        // Allow certain file formats
+        $allowedTypes = ['pdf', 'doc', 'docx', 'txt'];
+        if (!in_array($fileType, $allowedTypes)) {
+            return false; // Invalid file type
+        }
+
+        // Check if $uploadOk is set to 0 by an error
+        if ($uploadOk == 0) {
+            return false; // File upload failed
+        } else {
+            // Attempt to move uploaded file
+            if (move_uploaded_file($file["tmp_name"], $targetFile)) {
+                return $targetFile; // Return file path if upload successful
+            } else {
+                return false; // File upload failed
+            }
         }
     }
 
@@ -129,19 +181,173 @@ class Admin {
         }
     }
 
+    // Woord toevoegen
     public function addWord($word, $meaning, $source) {
-        $sql = "INSERT INTO words (word, meaning, source) VALUES (?, ?, ?)";
-        $stmt = $this->conn->prepare($sql);
-        if ($stmt === false) {
-            // Handle error in preparation
-            return 'prepare() failed: ' . htmlspecialchars($this->conn->error);
+        $stmt = $this->conn->prepare("INSERT INTO words (word, meaning, source) VALUES (?, ?, ?, ?)");
+        $stmt->bind_param("ssii", $word, $meaning, $source);
+        if ($stmt->execute()) {
+            return "Woord succesvol toegevoegd.";
+        } else {
+            return "Fout bij het toevoegen van het woord.";
         }
-        $stmt->bind_param("sss", $word, $meaning, $source);
+    }
+
+    // Update woord
+    public function updateWord($id, $word, $meaning, $source) {
+        $stmt = $this->conn->prepare("UPDATE words SET word = ?, meaning = ?,  source = ? WHERE id = ?");
+        $stmt->bind_param("ssiii", $word, $meaning, $source, $id);
+        if ($stmt->execute()) {
+            return "Woord succesvol bijgewerkt.";
+        } else {
+            return "Fout bij het bijwerken van het woord.";
+        }
+    }
+
+    // Verwijder woord
+    public function deleteWord($id) {
+        $stmt = $this->conn->prepare("DELETE FROM words WHERE id = ?");
+        $stmt->bind_param("i", $id);
+        if ($stmt->execute()) {
+            return "Woord succesvol verwijderd.";
+        } else {
+            return "Fout bij het verwijderen van het woord.";
+        }
+    }
+
+    // Fetch woorden
+    public function getWords() {
+        $stmt = $this->conn->prepare("SELECT words.*, documents.title AS document_title FROM words LEFT JOIN documents ON words.source = documents.id");
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
+    // User toevoegen
+    public function addUser($name, $email, $password, $role) {
+        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
+        // Validate role
+        if ($role !== 'admin' && $role !== 'student') {
+            return "Invalid role";
+        }
+
+        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
+        $sql = "INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("ssss", $name, $email, $hashed_password, $role);
 
         if ($stmt->execute()) {
-            return "Woord toegevoegd!";
+            return ucfirst($role) . " account created successfully!";
         } else {
             return "Error: " . $stmt->error;
         }
+    }
+
+    //User editen
+    public function editUser($id, $name, $email, $password, $role) {
+        // Check if ID exists
+        $sql_check = "SELECT * FROM users WHERE id = ?";
+        $stmt_check = $this->conn->prepare($sql_check);
+        $stmt_check->bind_param("i", $id);
+        $stmt_check->execute();
+        $result = $stmt_check->get_result();
+
+        if ($result->num_rows === 0) {
+            return "User not found";
+        }
+
+        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
+        // Validate role
+        if ($role !== 'admin' && $role !== 'student') {
+            return "Invalid role";
+        }
+
+        $sql = "UPDATE users SET name = ?, email = ?, password = ?, role = ? WHERE id = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("ssssi", $name, $email, $hashed_password, $role, $id);
+
+        if ($stmt->execute()) {
+            return "User updated successfully!";
+        } else {
+            return "Error: " . $stmt->error;
+        }
+    }
+
+    //User verwijderen
+    public function deleteUser($id) {
+        // Check if ID exists
+        $sql_check = "SELECT * FROM users WHERE id = ?";
+        $stmt_check = $this->conn->prepare($sql_check);
+        $stmt_check->bind_param("i", $id);
+        $stmt_check->execute();
+        $result = $stmt_check->get_result();
+
+        if ($result->num_rows === 0) {
+            return "User not found";
+        }
+
+        $sql = "DELETE FROM users WHERE id = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("i", $id);
+
+        if ($stmt->execute()) {
+            return "User deleted successfully!";
+        } else {
+            return "Error: " . $stmt->error;
+        }
+    }
+
+    //lijst maken van alle users
+    public function listUsers() {
+        $sql = "SELECT id, name, email, role FROM users ORDER BY name ASC";
+        $result = $this->conn->query($sql);
+
+        if ($result->num_rows > 0) {
+            return $result->fetch_all(MYSQLI_ASSOC);
+        } else {
+            return [];
+        }
+    }
+
+    function fetchTotalUsers($conn, $search = '') {
+        $search = '%' . $conn->real_escape_string($search) . '%';
+        $sql = "SELECT COUNT(*) as total FROM users WHERE name LIKE ?";
+        
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("s", $search);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $total = $result->fetch_assoc()['total'];
+        
+        $stmt->close();
+        return $total;
+    }
+
+    // Fetch users
+    function fetchUsers($conn, $search = '', $page = 1, $limit = 3) {
+        $offset = ($page - 1) * $limit;
+        $search = '%' . $conn->real_escape_string($search) . '%';
+        
+        $sql = "SELECT id, name, email, role FROM users 
+                WHERE name LIKE ? 
+                ORDER BY name 
+                LIMIT ? OFFSET ?";
+        
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("sii", $search, $limit, $offset);
+        $stmt->execute();
+        $result = $stmt->get_result();
+    
+        $users = [];
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $users[] = $row;
+            }
+        }
+        
+        $stmt->close();
+        return $users;
     }
 }

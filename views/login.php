@@ -2,6 +2,21 @@
 include('../config/db.php');
 include('../functions/functions.php');
 
+session_start();
+
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+// Example to check stored hashed password
+$sql = "SELECT password FROM users WHERE email = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("s", $email);
+$stmt->execute();
+$result = $stmt->get_result();
+$user = $result->fetch_assoc();
+echo "Hashed Password: " . $user['password'];
+
+
 if (isset($_SESSION['id'])) {
     if ($_SESSION['role'] === 'admin') {
         header("Location: ../admin/admin_dashboard.php");
@@ -30,7 +45,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-    <link rel="stylesheet" href="../public/css/styles.css"> <!-- Link to your CSS file -->
 </head>
 <body>
     <h1>Login</h1>

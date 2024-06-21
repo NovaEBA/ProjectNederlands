@@ -19,31 +19,41 @@ function checkStudentRole() {
 
 // function to log in the user
 function loginUser($email, $password, $conn) {
-    $sql = "SELECT id, name, email, password, role FROM users WHERE email = ?";
+    // Retrieve user details from the database based on email
+    $sql = "SELECT id, email, password, role FROM users WHERE email = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $result = $stmt->get_result();
 
-    if ($result->num_rows === 1) {
+    if ($result->num_rows == 1) {
         $user = $result->fetch_assoc();
-        if (password_verify($password, $user['password'])) {
+        $hashed_password = $user['password'];
+
+        // Debugging: Print the fetched user details
+        echo "User fetched: ";
+        print_r($user);
+        
+        // Verify the password
+        if (password_verify($password, $hashed_password)) {
+            // Password is correct, set session variables and redirect
+            session_start();
             $_SESSION['id'] = $user['id'];
-            $_SESSION['name'] = $user['name'];
             $_SESSION['email'] = $user['email'];
             $_SESSION['role'] = $user['role'];
 
+            // Redirect based on role
             if ($user['role'] === 'admin') {
                 header("Location: ../admin/admin_dashboard.php");
             } elseif ($user['role'] === 'student') {
                 header("Location: ../student/student_dashboard.php");
-            } 
+            }
             exit();
         } else {
-            return "Invalid password.";
+            return "Incorrect password";
         }
     } else {
-        return "No user found with this email.";
+        return "User not found";
     }
 }
 

@@ -18,165 +18,214 @@ $admin = new Admin($conn);
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-$itemsPerPage = 6;
-$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-$search = isset($_GET['search']) ? $_GET['search'] : '';
-$offset = ($page - 1) * $itemsPerPage;
+// Handle editing a word
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['word_id'])) {
+    $id = $_POST['word_id'];
+    $word = $_POST['word'];
+    $meaning = $_POST['meaning'];
+    $standalone = isset($_POST['standalone']) ? 1 : 0;
+    $document_id = !$standalone && isset($_POST['document_id']) ? $_POST['document_id'] : null;
 
-$totalItems = $admin->getUploadedFilesCount($search);
-$totalPages = ceil($totalItems / $itemsPerPage);
+    $message = $admin->updateWord($id, $word, $meaning, $standalone, $document_id);
+    echo "<script>alert('$message');</script>";
+}
 
-$files = $admin->getUploadedFilesWithPagination($offset, $itemsPerPage, $search);
+// Handle deleting a word
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_word'])) {
+    $id = $_POST['delete_word'];
+    $message = $admin->deleteWord($id);
+    echo "<script>alert('$message');</script>";
+}
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    if (isset($_POST['delete_id'])) {
-        $document_id = $_POST['delete_id'];
-        $message = $admin->deleteDocument($document_id);
-        echo "<script>alert('$message');</script>";
-    } else {
-        $title = $_POST['title'];
-        $description = $_POST['description'];
-        $file = $_FILES['file'];
-        $user_id = $_SESSION['id'];
+// Fetch words along with the document title
+$query = "SELECT w.id, w.word, w.meaning, w.source, d.title AS document_title 
+          FROM words w 
+          LEFT JOIN documents d ON w.source = d.id";
+$result = $conn->query($query);
 
-        $message = $admin->addDocument($user_id, $file, $description, $title);
-        echo "<script>alert('$message');</script>";
+$words = [];
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $words[] = $row;
     }
 }
-?>
 
+// Function to fetch document by source
+function getDocumentBySource($source) {
+    global $conn;
+    $stmt = $conn->prepare("SELECT title FROM documents WHERE id = ?");
+    $stmt->bind_param("i", $source);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    return $result->fetch_assoc();
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Admin Dashboard</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="stylesheet" href="../public/css/admin.css" >
 </head>
 <body>
     <?php include 'header.php'; ?>
-    <section class="documents">
+    <section class="words">
     <div class="container mt-5">
-            <div class="modal-overlay" id="modalOverlay">
-                <div class="modal-content">
-                    <span class="close-modal" id="closeModal">&times;</span>
-                    <h4>Nieuw bestand</h4><br>
-                    <form action="admin_dashboard.php" method="post" enctype="multipart/form-data">
-                        <div class="form-group">
-                            <label for="title">Titel:</label>
-                            <input type="text" class="form-control" id="title" name="title" placeholder="Titel" required><br>
-                        </div>
-                        <div class="form-group">
-                            <label for="description">Omschrijving:</label>
-                            <textarea class="form-control" id="description" name="description" placeholder="Dit artikel gaat over.." required></textarea><br>
-                        </div>
-                        <div class="form-group d-flex justify-content-between align-items-center">
-                        <div class="custom-file">
-                            <input type="file" class="form-control-file" id="file" name="file" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary ml-2">Check</button>
-                    </div>
-                    </form>
+    <div class="modal-overlay" id="wordModalOverlay" style="display:none;">
+        <div class="modal-content">
+            <span class="close-modal" id="closeWordModal">&times;</span>
+            <h4>Nieuw woord</h4>
+            <form action="admin_dashboard.php" method="post" id="wordForm">
+                <div class="form-group">
+                    <label for="word">Woord:</label>
+                    <input type="text" class="form-control" id="word" name="word" placeholder="Woord" required>
                 </div>
-            </div>
-            <div class="cards">
-                <div class="container mt-5">
-                    <div class="row justify-content-center">
-                        <div class="col">
-                            <h3>Artikel dashboard</h3>
-                        </div>
-                        <div class="col-auto ">
-                            <button class="btn btn-primary" id="addFileBtn">Nieuw artikel</button>
-                        </div>
-                    </div>
-                    <form class="form-inline mb-4" method="GET" action="admin_dashboard.php">
-                        <input class="form-control mr-sm-2" type="search" name="search" placeholder="Search by title" aria-label="Search" value="<?php echo htmlspecialchars($search); ?>">
-                        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-                    </form>
-                    <div class="row">
+                <div class="form-group">
+                    <label for="meaning">Betekenis:</label>
+                    <textarea class="form-control" id="meaning" name="meaning" placeholder="Betekenis" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="source">Kies een document:</label>
+                    <select class="form-control" id="source" name="source">
+                        <option value="">Selecteer een document</option>
                         <?php foreach ($files as $file): ?>
-                            <div class="col-md-4">
-                                <div class="card mb-4 shadow-sm">
-                                    <div class="card-body">
-                                        <h5 class="card-title"><?php echo htmlspecialchars($file['title']); ?></h5>
-                                        <p class="card-text"><?php echo htmlspecialchars($file['description']); ?></p>
-                                        <p class="card-text"><a href="<?php echo htmlspecialchars($file['file_path']); ?>">Download</a></p>
-                                        <form method="post" class="delete-form" action="admin_dashboard.php">
-                                            <input type="hidden" name="delete_id" value="<?php echo htmlspecialchars($file['id']); ?>">
-                                            <button type="button" class="btn btn-danger delete-btn">Delete</button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
+                            <option value="<?= $file['id'] ?>"><?= htmlspecialchars($file['title']) ?></option>
                         <?php endforeach; ?>
-                    </div>
-
-                    <nav aria-label="Page navigation">
-                        <ul class="pagination justify-content-center">
-                            <li class="page-item <?php if ($page <= 1) echo 'disabled'; ?>">
-                                <a class="page-link" href="?page=<?php echo $page - 1; ?>&search=<?php echo htmlspecialchars($search); ?>" aria-label="Previous">
-                                    <span aria-hidden="true">&laquo;</span>
-                                </a>
-                            </li>
-                            <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                                <li class="page-item <?php if ($i == $page) echo 'active'; ?>"><a class="page-link" href="?page=<?php echo $i; ?>&search=<?php echo htmlspecialchars($search); ?>"><?php echo $i; ?></a></li>
-                            <?php endfor; ?>
-                            <li class="page-item <?php if ($page >= $totalPages) echo 'disabled'; ?>">
-                                <a class="page-link" href="?page=<?php echo $page + 1; ?>&search=<?php echo htmlspecialchars($search); ?>" aria-label="Next">
-                                    <span aria-hidden="true">&raquo;</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </nav>
+                    </select>
                 </div>
-            </div>
-         </div>
-    </section>
-    
-    <div class="footer container-fluid">
+                <button type="submit" class="btn btn-primary" id="addWordBtn">Toevoegen</button>
+            </form>
+        </div>
     </div>
+        <button id="openWordModal" class="btn btn-dark">
+            <strong>Nieuw woord</strong>  <i class="fas fa-plus"></i>
+        </button>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Woord</th>
+                    <th>Betekenis</th>
+                    <th>Document</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($words as $word): ?>
+                    <tr>
+                        <td><?php echo htmlspecialchars($word['word']); ?></td>
+                        <td>
+                            <?php echo isset($word['document_title']) ? htmlspecialchars($word['document_title']) : 'Standalone'; ?>
+                        </td>
+                        <td>
+                            <?php
+                            if (!empty($word['source'])) {
+                                echo htmlspecialchars($word['document_title']);
+                            } else {
+                                echo 'N/A'; // Or some other placeholder for standalone words
+                            }
+                            ?>
+                        </td>
+                        <td>
+                            <button class="btn btn-link edit-word" 
+                                    data-id="<?php echo htmlspecialchars($word['id']); ?>" 
+                                    data-word="<?php echo htmlspecialchars($word['word']); ?>" 
+                                    data-meaning="<?php echo htmlspecialchars($word['meaning']); ?>"
+                                    data-source="<?php echo htmlspecialchars($word['source']); ?>">
+                                <i class="fas fa-edit text-primary"></i>
+                            </button>
+                            <form method="post" class="delete-form" action="admin_dashboard.php" style="display:inline;">
+                                <input type="hidden" name="delete_word" value="<?php echo htmlspecialchars($word['id']); ?>">
+                                <button type="submit" class="delete-btn btn btn-link p-0"><i class="fas fa-trash-alt text-danger"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+</section>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script>
-    $(document).ready(function(){
-        $('#addFileBtn').click(function(){
-            $('#modalOverlay').fadeIn(); // Show modal overlay
-        });
+<!-- Edit Word Modal -->
+<div class="modal-overlay" id="editWordModalOverlay" style="display:none;">
+    <div class="modal-content">
+        <span class="close-modal" id="closeEditWordModal">&times;</span>
+        <h4>Woord bewerken</h4><br>
+        <form action="admin_dashboard.php" method="post">
+            <input type="hidden" name="word_id" id="edit_word_id">
+            <div class="form-group">
+                <label for="edit_word">Woord:</label>
+                <input type="text" class="form-control" id="edit_word" name="word" required>
+            </div>
+            <div class="form-group">
+                <label for="edit_meaning">Betekenis:</label>
+                <textarea class="form-control" id="edit_meaning" name="meaning" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="edit_document_id">Kies een document:</label>
+                <select class="form-control" id="edit_document_id" name="document_id">
+                    <option value="">Selecteer document</option>
+                    <?php foreach ($files as $file): ?>
+                        <option value="<?php echo htmlspecialchars($file['id']); ?>"><?php echo htmlspecialchars($file['title']); ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Opslaan</button>
+        </form>
+    </div>
+</div>
 
-        $('#closeModal').click(function(){
-            $('#modalOverlay').fadeOut(); // Hide modal overlay on close button click
-        });
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js"></script>
+<script>
+$(document).ready(function() {
+    // Show add word modal
+    $('#openWordModal').click(function() {
+        $('#wordModalOverlay').fadeIn(); // Show modal overlay
+    });
 
-        $(window).click(function(event){
-            if ($(event.target).is('#modalOverlay')) {
-                $('#modalOverlay').fadeOut(); // Hide modal overlay on outside click
-            }
-        })});
+    // Close add word modal
+    $('#closeWordModal').click(function() {
+        $('#wordModalOverlay').fadeOut(); // Hide modal overlay on close button click
+    });
 
-    $(document).ready(function(){
-    // Handle delete form submission
-    $('.delete-form').submit(function(e){
-        e.preventDefault(); // Prevent default form submission
-        
-        if (confirm("Are you sure you want to delete this document?")) {
-            var form = $(this);
-            var url = form.attr('action');
-            var formData = form.serialize();
+    // Close modal on outside click for adding a word
+    $(window).click(function(event) {
+        if ($(event.target).is('#wordModalOverlay')) {
+            $('#wordModalOverlay').fadeOut(); // Hide modal overlay on outside click
+        }
+    });
 
-            $.post(url, formData)
-                .done(function(response) {
-                    alert(response); // Display success message
-                    location.reload(); // Reload the page to update the document list
-                })
-                .fail(function() {
-                    alert("Error deleting document."); // Display error message
-                });
+    // Show edit word modal with pre-filled data
+    $('.edit-word').click(function() {
+        var id = $(this).data('id');
+        var word = $(this).data('word');
+        var meaning = $(this).data('meaning');
+        var documentId = $(this).data('source');
+
+        $('#edit_word_id').val(id);
+        $('#edit_word').val(word);
+        $('#edit_meaning').val(meaning);
+        $('#edit_document_id').val(documentId);
+
+        $('#editWordModalOverlay').fadeIn(); // Show edit modal overlay
+    });
+
+    // Close edit word modal
+    $('#closeEditWordModal').click(function() {
+        $('#editWordModalOverlay').fadeOut(); // Hide modal overlay on close button click
+    });
+
+    // Close edit modal on outside click for editing a word
+    $(window).click(function(event) {
+        if ($(event.target).is('#editWordModalOverlay')) {
+            $('#editWordModalOverlay').fadeOut(); // Hide modal overlay on outside click
         }
     });
 });
 </script>
-<?php include '..\templates\footer.php'; ?> 
 </body>
 </html>

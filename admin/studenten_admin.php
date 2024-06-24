@@ -88,7 +88,7 @@ $conn->close();
                 </div>
                 <div class="col-auto">
                     <div class="input-group">
-                        <input type="text" name="search" class="form-control" placeholder="Search by name" value="<?= htmlspecialchars($search) ?>">
+                        <input type="text" name="search" class="form-control" placeholder="Zoeken.." value="<?= htmlspecialchars($search) ?>">
                         <div class="input-group-append">
                             <button class="btn btn-primary" type="submit">Zoek</button>
                         </div>
@@ -134,7 +134,7 @@ $conn->close();
                 </tbody>
             </table>
             <nav>
-                <ul class="pagination">
+                <ul class="pagination justify-content-center">
                     <?php if ($page > 1): ?>
                         <li class="page-item">
                             <a class="page-link" href="?page=<?= $page - 1 ?>&search=<?= htmlspecialchars($search) ?>" aria-label="Previous">

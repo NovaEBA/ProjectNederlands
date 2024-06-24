@@ -13,8 +13,6 @@ if ($conn->connect_error) {
 
 $conn->set_charset("utf8");
 
-$admin = new Admin($conn);
-
 $search = $_GET['search'] ?? '';
 
 // Handle document addition
@@ -23,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
     $description = $_POST['description'];
     $file = $_FILES['file'];
 
-    $uploads_dir = 'uploads';
+    $uploads_dir = '../uploads';
     if (!is_dir($uploads_dir)) {
         mkdir($uploads_dir, 0777, true);
     }
@@ -37,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
     } else {
         echo "Error uploading file.";
     }
-    header("Location: admin_dashboard.php");
+    header("Location: bronnen_admin.php");
     exit;
 }
 
@@ -144,7 +142,7 @@ $conn->close();
                 <div class="modal-content">
                     <span class="close-modal" id="closeModal">&times;</span>
                     <h4>Nieuw bestand</h4><br>
-                    <form action="admin_dashboard.php" method="post" enctype="multipart/form-data">
+                    <form action="bronnen_admin.php" method="post" enctype="multipart/form-data">
                         <div class="form-group">
                             <label for="title">Titel:</label>
                             <input type="text" class="form-control" id="title" name="title" placeholder="Titel" required><br>
@@ -196,6 +194,7 @@ $conn->close();
                                             </div>
                                         </div>
                                         <p class="card-text"><?php echo htmlspecialchars($file['description']); ?></p>
+                                        <a href="<?php echo htmlspecialchars( $file['file_path']); ?>" class="btn btn-primary" target="_blank">Read</a>
                                         <a href="<?php echo htmlspecialchars($file['file_path']); ?>" class="download-link">
                                             <i class="fas fa-download float-right"></i>
                                         </a>
@@ -275,7 +274,7 @@ $(document).ready(function(){
             $('#edit_file').attr('placeholder', filePath);
 
             $('#editModalOverlay').fadeIn(); // Show edit modal overlay
-            $.post('admin_dashboard.php', formData)
+            $.post('admin_woorden.php', formData)
             .done(function(response) {
                 alert(response); // Show success message
                 $('#editModal').modal('hide'); // Hide the modal

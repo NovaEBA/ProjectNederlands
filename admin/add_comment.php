@@ -15,7 +15,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $message = $note->addNoteToSentence($student_sentence_id,  $user_id, $comment);
     if ($message === "Comment added successfully!") {
-        header("Location: ../admin/admin_dashboard.php");
+        header("Location: ../admin/admin_woorden.php");
         exit();
     } else {
         echo $message;

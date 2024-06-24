@@ -84,7 +84,7 @@ class Admin {
 
     // Method to get uploaded files
     public function getUploadedFiles() {
-        $sql = "SELECT title, description, file_path FROM documents";
+        $sql = "SELECT id, title, description, file_path FROM documents";
         $result = $this->conn->query($sql);
 
         if ($result->num_rows > 0) {
@@ -181,42 +181,71 @@ class Admin {
         }
     }
 
-    // Woord toevoegen
+    // Methods to add, update, delete words
     public function addWord($word, $meaning, $source) {
-        $stmt = $this->conn->prepare("INSERT INTO words (word, meaning, source) VALUES (?, ?, ?, ?)");
-        $stmt->bind_param("ssii", $word, $meaning, $source);
+        $stmt = $this->conn->prepare("INSERT INTO words (word, meaning, source) VALUES (?, ?, ?)");
+        $stmt->bind_param("ssi", $word, $meaning, $source);
         if ($stmt->execute()) {
-            return "Woord succesvol toegevoegd.";
+            return "Word added successfully.";
         } else {
-            return "Fout bij het toevoegen van het woord.";
+            return "Error: " . $stmt->error;
         }
     }
 
-    // Update woord
     public function updateWord($id, $word, $meaning, $source) {
-        $stmt = $this->conn->prepare("UPDATE words SET word = ?, meaning = ?,  source = ? WHERE id = ?");
-        $stmt->bind_param("ssiii", $word, $meaning, $source, $id);
+        $stmt = $this->conn->prepare("UPDATE words SET word = ?, meaning = ?, source = ? WHERE id = ?");
+        $stmt->bind_param("ssii", $word, $meaning, $source, $id);
+        
         if ($stmt->execute()) {
-            return "Woord succesvol bijgewerkt.";
+            return "Word updated successfully.";
         } else {
-            return "Fout bij het bijwerken van het woord.";
+            return "Error updating word: " . $stmt->error;
         }
     }
 
-    // Verwijder woord
     public function deleteWord($id) {
         $stmt = $this->conn->prepare("DELETE FROM words WHERE id = ?");
         $stmt->bind_param("i", $id);
         if ($stmt->execute()) {
-            return "Woord succesvol verwijderd.";
+            return "Word deleted successfully.";
         } else {
-            return "Fout bij het verwijderen van het woord.";
+            return "Error: " . $stmt->error;
         }
     }
 
-    // Fetch woorden
-    public function getWords() {
-        $stmt = $this->conn->prepare("SELECT words.*, documents.title AS document_title FROM words LEFT JOIN documents ON words.source = documents.id");
+     // Fetch woorden
+     public function getWords() {
+        $stmt = $this->conn->prepare("
+            SELECT w.id, w.word, w.meaning, w.source,
+                   IF(w.source = 0, 'standalone', d.title) AS document_title
+            FROM words w
+            LEFT JOIN documents d ON w.source = d.id
+            ORDER BY w.word ASC
+        ");
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
+    // Pagination methods
+    public function fetchTotalWords($conn, $search) {
+        $stmt = $conn->prepare("SELECT COUNT(*) AS total FROM words WHERE word LIKE ?");
+        $search = '%' . $search . '%';
+        $stmt->bind_param("s", $search);
+        $stmt->execute();
+        $result = $stmt->get_result()->fetch_assoc();
+        return $result['total'];
+    }
+
+    public function fetchWords($conn, $search, $page, $limit) {
+        $offset = ($page - 1) * $limit;
+        $stmt = $conn->prepare("SELECT words.*, COALESCE(documents.title, 'standalone') AS document_title 
+                                FROM words 
+                                LEFT JOIN documents ON words.source = documents.id 
+                                WHERE words.word LIKE ? 
+                                LIMIT ? OFFSET ?");
+        $search = '%' . $search . '%';
+        $stmt->bind_param("sii", $search, $limit, $offset);
         $stmt->execute();
         $result = $stmt->get_result();
         return $result->fetch_all(MYSQLI_ASSOC);

@@ -1,6 +1,15 @@
 body {
     font-family: Arial, Helvetica, sans-serif;
 }
+
+/*Cards dashboard styling*/
+.documents h4 {
+    color: rgb(140, 140, 140);
+    font-size: 25px;
+}
+.documents label {
+    color: rgb(66, 66, 66);
+}
 .modal-overlay {
     display: none;
     position: fixed;
@@ -23,13 +32,6 @@ body {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
     width: 60%; /* Adjust width as needed */
     max-width: 600px; /* Set maximum width */
-}
- h4 {
-    color: rgb(140, 140, 140);
-    font-size: 25px;
-}
-.documents label {
-    color: rgb(66, 66, 66);
 }
 .close-modal {
     position: absolute;
@@ -83,18 +85,7 @@ input::file-selector-button:hover {
     margin-top: 10px;
     font-size: 1.2rem;
 }
-.words{
-    margin-top:50px;
-}
-.users{
-   margin-top:50px;
-}
-.toolsRow {
-    margin-bottom:20px;
-}
-.documents {
-    margin-top: 50px;
-}
-.pagination {
-    margin-top: 20px;
+.meaningText{
+    font-style:italic;
+    color:rgb(194, 194, 194);
 }

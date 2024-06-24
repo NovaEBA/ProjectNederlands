@@ -44,7 +44,7 @@ function loginUser($email, $password, $conn) {
 
             // Redirect based on role
             if ($user['role'] === 'admin') {
-                header("Location: ../admin/admin_dashboard.php");
+                header("Location: ../admin/admin_woorden.php");
             } elseif ($user['role'] === 'student') {
                 header("Location: ../student/student_dashboard.php");
             }

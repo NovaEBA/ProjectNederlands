@@ -6,17 +6,14 @@ $current_page = basename($_SERVER['PHP_SELF']);
 $header_content = '';
 
 switch ($current_page) {
-    case 'admin_inbox.php':
-        $header_content = 'Bekijk jouw <strong>Overzicht!</strong>';
+    case 'student_dashboard.php':
+        $header_content = 'Bekijk jouw <strong>WoordDossier!</strong>';
         break;
-    case 'admin_woorden.php':
-        $header_content = 'Bekijk jouw <strong>Woord overzicht!</strong>';
+    case 'words_student.php':
+        $header_content = 'Bekijk het <strong>Woorden Overzicht!</strong>';
         break;
-    case 'studenten_admin.php':
-        $header_content = 'Bekijk jouw <strong>Studenten overzicht!</strong>';
-        break;
-    case 'bronnen_admin.php':
-        $header_content = 'Bekijk jouw <strong>Bronnen overzicht!</strong>';
+    case 'bronnen_student.php':
+        $header_content = 'Bekijk het <strong>Bronnen Overzicht!</strong>';
         break;
 }
 ?>
@@ -35,7 +32,7 @@ switch ($current_page) {
             <div class="col-sm-10 justify-content-center">
                 <nav class="navbar navbar-expand-lg justify-content-center">
                 <div class="container">
-                    <a class="navbar-brand col-auto" href="../admin/admin_woorden.php">
+                    <a class="navbar-brand col-auto" href="..\student\student_dashboard.php">
                         <img src="../public/img/light.png" height="27" class="d-inline-block" style="opacity:0.7; margin-bottom:8px" alt="lightbulb icoon">
                         <p class="d-inline-block"><strong>WoordDossier</strong></p>
                     </a>
@@ -45,16 +42,13 @@ switch ($current_page) {
                     <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
                         <ul class="navbar-nav">
                             <li class="nav-item">
-                                <a class="nav-link" href="..\admin\admin_inbox.php">Inbox</a>
+                                <a class="nav-link" href="..\student\student_dashboard.php">Dashboard</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="..\admin\admin_woorden.php">Woorden</a>
+                                <a class="nav-link" href="..\student\words_student.php">Woorden</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="..\admin\studenten_admin.php">Studenten</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="..\admin\bronnen_admin.php">Bronnen</a>
+                                <a class="nav-link" href="..\student\bronnen_student.php">Bronnen</a>
                             </li>
                             <li class="nav-item col-auto">
                                 <a class="btn btn-dark" href="../views/logout.php" role="button">
